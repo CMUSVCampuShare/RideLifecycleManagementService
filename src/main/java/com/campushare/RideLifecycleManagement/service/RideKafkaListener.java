@@ -15,11 +15,12 @@ public class RideKafkaListener {
     @Autowired
     private RideService rideService;
 
-    @KafkaListener(topics = "PostRide", groupId = "ride-lifecycle-management-group", containerFactory = "kafkaListenerContainerFactory")
+    //    @KafkaListener(topics = "PostRide", groupId = "ride-lifecycle-management-group", containerFactory = "kafkaListenerContainerFactory")
 //    public void listenPostRide(PostRideDTO postRideDTO) {
 //        logger.info("Received a postRideDTO message from Kafka: {}", postRideDTO);
 //        rideService.createRideEntry(postRideDTO);
 //    }
+    @KafkaListener(topics = "TestKafkaTopic", groupId = "ride-lifecycle-management-group", containerFactory = "kafkaListenerContainerFactory")
     public void listenPostRide(String testDTO) {
         logger.info("Received a postRideDTO message from Kafka: {}", testDTO);
         PostRideDTO postRideDTO = new PostRideDTO(UUID.randomUUID(), testDTO.split(":")[0], Integer.parseInt(testDTO.split(":")[1]), PostRideDTO.RideStatus.ON_GOING);
