@@ -1,13 +1,14 @@
 package com.campushare.RideLifecycleManagement.service;
 
+import com.campushare.RideLifecycleManagement.exceptions.RideNotFoundException;
 import com.campushare.RideLifecycleManagement.dto.PostRideDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class RideKafkaListener {
@@ -15,15 +16,24 @@ public class RideKafkaListener {
     @Autowired
     private RideService rideService;
 
-    //    @KafkaListener(topics = "PostRide", groupId = "ride-lifecycle-management-group", containerFactory = "kafkaListenerContainerFactory")
-//    public void listenPostRide(PostRideDTO postRideDTO) {
-//        logger.info("Received a postRideDTO message from Kafka: {}", postRideDTO);
-//        rideService.createRideEntry(postRideDTO);
-//    }
-    @KafkaListener(topics = "TestKafkaTopic", groupId = "ride-lifecycle-management-group", containerFactory = "kafkaListenerContainerFactory")
-    public void listenPostRide(String testDTO) {
-        logger.info("Received a postRideDTO message from Kafka: {}", testDTO);
-        PostRideDTO postRideDTO = new PostRideDTO(UUID.randomUUID(), testDTO.split(":")[0], Integer.parseInt(testDTO.split(":")[1]), PostRideDTO.RideStatus.ON_GOING);
+    @KafkaListener(topics = "create_post_topic", groupId = "ride-lifecycle-management-group", containerFactory = "kafkaListenerContainerFactory")
+    public void listenPostRide(String postRideDTOString) throws JsonProcessingException {
+        logger.info("Received a postRideDTO message from Kafka: {}", postRideDTOString);
+        ObjectMapper objectMapper = new ObjectMapper();
+        PostRideDTO postRideDTO = objectMapper.readValue(postRideDTOString, PostRideDTO.class);
         rideService.createRideEntry(postRideDTO);
     }
+
+    @KafkaListener(topics = "edit_post_topic", groupId = "ride-lifecycle-management-group", containerFactory = "kafkaListenerContainerFactory")
+    public void editPostRide(String editRideDTOString) throws JsonProcessingException, RideNotFoundException {
+        logger.info("Received a postRideDTO message from Kafka: {}", editRideDTOString);
+        ObjectMapper objectMapper = new ObjectMapper();
+        PostRideDTO editRideDTO = objectMapper.readValue(editRideDTOString, PostRideDTO.class);
+        try {
+            rideService.editRideEntry(editRideDTO);
+        } catch (RideNotFoundException e) {
+            logger.error("Cannot find the RideId/PostId that you send: {}", e);
+        }
+    }
+
 }

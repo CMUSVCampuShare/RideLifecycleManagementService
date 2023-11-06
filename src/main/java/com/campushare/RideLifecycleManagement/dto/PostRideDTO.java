@@ -1,22 +1,36 @@
 package com.campushare.RideLifecycleManagement.dto;
 
-import java.util.UUID;
+import lombok.Data;
 
+import java.util.List;
+import java.util.Date;
+
+
+@Data
 public class PostRideDTO {
-    public UUID rideId;
-    public String driverId;
-    public int maxSeats;
-    public RideStatus rideStatus;
-
-    public enum RideStatus {
-        ON_GOING;
+    private Post post;
+    public enum Type {
+        RIDE,
+        FOODPICKUP,
+        LUNCH
     }
 
-    public PostRideDTO(UUID rideId, String driverId, int maxSeats, RideStatus rideStatus) {
-        this.rideId = rideId;
-        this.driverId = driverId;
-        this.maxSeats = maxSeats;
-        this.rideStatus = rideStatus;
+    public enum Status {
+        ONGOING,
+        COMPLETE,
+        CANCELED
     }
 
+    @Data
+    public class Post {
+        private String postId;
+        private String userId;
+        private String title;
+        private String details;
+        private Type type;
+        private Integer noOfSeats;
+        private Status status;
+        private Date timestamp;
+        private List<String> comments;
+    }
 }
