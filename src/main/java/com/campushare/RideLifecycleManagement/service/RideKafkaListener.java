@@ -18,15 +18,15 @@ public class RideKafkaListener {
 
     @KafkaListener(topics = "create_post_topic", groupId = "ride-lifecycle-management-group", containerFactory = "kafkaListenerContainerFactory")
     public void listenPostRide(String postRideDTOString) throws JsonProcessingException {
-        logger.info("Received a postRideDTO message from Kafka: {}", postRideDTOString);
+        logger.info("Received a create_post_topic message from Kafka: {}", postRideDTOString);
         ObjectMapper objectMapper = new ObjectMapper();
         PostRideDTO postRideDTO = objectMapper.readValue(postRideDTOString, PostRideDTO.class);
         rideService.createRideEntry(postRideDTO);
     }
 
     @KafkaListener(topics = "edit_post_topic", groupId = "ride-lifecycle-management-group", containerFactory = "kafkaListenerContainerFactory")
-    public void editPostRide(String editRideDTOString) throws JsonProcessingException, RideNotFoundException {
-        logger.info("Received a postRideDTO message from Kafka: {}", editRideDTOString);
+    public void editPostRide(String editRideDTOString) throws JsonProcessingException {
+        logger.info("Received an edit_post_topic message from Kafka: {}", editRideDTOString);
         ObjectMapper objectMapper = new ObjectMapper();
         PostRideDTO editRideDTO = objectMapper.readValue(editRideDTOString, PostRideDTO.class);
         try {

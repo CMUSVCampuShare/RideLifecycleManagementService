@@ -9,6 +9,7 @@ import java.util.Date;
 @Data
 public class PostRideDTO {
     private Post post;
+
     public enum Type {
         RIDE,
         FOODPICKUP,
@@ -16,8 +17,10 @@ public class PostRideDTO {
     }
 
     public enum Status {
+        CREATED,
+        FULL,
         ONGOING,
-        COMPLETE,
+        COMPLETED,
         CANCELED
     }
 
@@ -26,6 +29,8 @@ public class PostRideDTO {
         private String postId;
         private String userId;
         private String title;
+        private String from;
+        private String to;
         private String details;
         private Type type;
         private Integer noOfSeats;
