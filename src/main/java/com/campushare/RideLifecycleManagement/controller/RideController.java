@@ -44,8 +44,8 @@ public class RideController {
         'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: new URLSearchParams({
-        'rideId': 'ride的ID',
-        'passengerId': 'passenger的ID'
+        'rideId': 'rideID',
+        'passengerId': 'passengerID'
     })
 })
 .then(response => response.text())
