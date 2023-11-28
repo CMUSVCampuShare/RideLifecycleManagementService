@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class RideLifecycleManagementApplication {
 
 	public static void main(String[] args) {
-		System.out.println("Hello CampuShare!");
+		System.out.println("CampuShare RideLifecycleManagementApplication started!");
 		SpringApplication.run(RideLifecycleManagementApplication.class, args);
 	}
 

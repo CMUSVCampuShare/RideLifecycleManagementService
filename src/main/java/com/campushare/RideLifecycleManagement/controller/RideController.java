@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 @RestController
 @RequestMapping("/api/rides")
 public class RideController {
-    private static final Logger logger = LoggerFactory.getLogger(RideService.class);
+    private static final Logger logger = LoggerFactory.getLogger(RideController.class);
 
     @Autowired
     private RideService rideService;
