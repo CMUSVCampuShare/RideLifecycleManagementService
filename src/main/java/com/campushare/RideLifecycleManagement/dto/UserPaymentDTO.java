@@ -5,6 +5,6 @@ import lombok.AllArgsConstructor;
 @Data
 @AllArgsConstructor
 public class UserPaymentDTO {
-    String driverId;
+    String rideId;
     String[] passengerIds;
 }
