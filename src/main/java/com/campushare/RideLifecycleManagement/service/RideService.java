@@ -82,7 +82,7 @@ public class RideService {
 
     public void completeRide(String rideId, String driverId, String[] passengerIds) throws RideNotFoundException, JsonProcessingException {
         // Send a user_payment_topic to Kafka
-        UserPaymentDTO userPaymentDTO = new UserPaymentDTO(rideId, passengerIds);
+        UserPaymentDTO userPaymentDTO = new UserPaymentDTO(rideId, driverId, passengerIds);
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonUserPaymentDTO = objectMapper.writeValueAsString(userPaymentDTO);
         userPaymentKafkaTemplate.send("user_payment_topic", jsonUserPaymentDTO);
