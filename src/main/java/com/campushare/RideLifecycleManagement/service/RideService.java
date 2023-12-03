@@ -33,6 +33,15 @@ public class RideService {
         rideRepository.save(ride);
     }
 
+    public Ride getRideEntry(String rideId) throws RideNotFoundException {
+        Optional<Ride> rideOptional = rideRepository.findById(rideId);
+        if (rideOptional.isPresent()) {
+            return rideOptional.get();
+        } else {
+            throw new RideNotFoundException("Ride not found for id: " + rideId);
+        }
+    }
+
     public void editRideEntry(PostRideDTO editRideDTO) throws RideNotFoundException {
         Optional<Ride> existingRideOpt = rideRepository.findById(editRideDTO.getPost().getPostId());
         if (existingRideOpt.isPresent()) {
