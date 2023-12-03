@@ -6,5 +6,6 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class UserPaymentDTO {
     String rideId;
+    String driverId;
     String[] passengerIds;
 }

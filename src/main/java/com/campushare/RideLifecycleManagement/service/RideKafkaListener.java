@@ -2,6 +2,7 @@ package com.campushare.RideLifecycleManagement.service;
 
 import com.campushare.RideLifecycleManagement.exceptions.RideNotFoundException;
 import com.campushare.RideLifecycleManagement.dto.PostRideDTO;
+import com.campushare.RideLifecycleManagement.model.Ride;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,10 +31,16 @@ public class RideKafkaListener {
         ObjectMapper objectMapper = new ObjectMapper();
         PostRideDTO editRideDTO = objectMapper.readValue(editRideDTOString, PostRideDTO.class);
         try {
-            rideService.editRideEntry(editRideDTO);
+            if (editRideDTO.getPost().getStatus() == PostRideDTO.Status.COMPLETED) {
+                String rideId = editRideDTO.getPost().getPostId();
+                Ride ride = rideService.getRideEntry(rideId);
+                rideService.completeRide(rideId, ride.getDriverId(), ride.getPassengerIds().toArray(new String[0]));
+                logger.info("Ride " + rideId + " by " + ride.getDriverId() + " is completed.");
+            } else {
+                rideService.editRideEntry(editRideDTO);
+            }
         } catch (RideNotFoundException e) {
             logger.error("Cannot find the RideId/PostId that you send: {}", e);
         }
     }
-
 }

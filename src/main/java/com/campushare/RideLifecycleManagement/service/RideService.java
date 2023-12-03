@@ -33,6 +33,15 @@ public class RideService {
         rideRepository.save(ride);
     }
 
+    public Ride getRideEntry(String rideId) throws RideNotFoundException {
+        Optional<Ride> rideOptional = rideRepository.findById(rideId);
+        if (rideOptional.isPresent()) {
+            return rideOptional.get();
+        } else {
+            throw new RideNotFoundException("Ride not found for id: " + rideId);
+        }
+    }
+
     public void editRideEntry(PostRideDTO editRideDTO) throws RideNotFoundException {
         Optional<Ride> existingRideOpt = rideRepository.findById(editRideDTO.getPost().getPostId());
         if (existingRideOpt.isPresent()) {
@@ -82,7 +91,7 @@ public class RideService {
 
     public void completeRide(String rideId, String driverId, String[] passengerIds) throws RideNotFoundException, JsonProcessingException {
         // Send a user_payment_topic to Kafka
-        UserPaymentDTO userPaymentDTO = new UserPaymentDTO(rideId, passengerIds);
+        UserPaymentDTO userPaymentDTO = new UserPaymentDTO(rideId, driverId, passengerIds);
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonUserPaymentDTO = objectMapper.writeValueAsString(userPaymentDTO);
         userPaymentKafkaTemplate.send("user_payment_topic", jsonUserPaymentDTO);

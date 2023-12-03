@@ -28,11 +28,12 @@ public class RideController {
         return "Join request for " + passengerId + " to join " + rideId + " (rideTitle: " + rideTitle + ") is rejected";
     }
 
-    @PostMapping("/completeRide")
-    public String completeRide(@RequestParam String rideId, @RequestParam String driverId, @RequestParam String[] passengerIds) throws RideNotFoundException, JsonProcessingException {
-        rideService.completeRide(rideId, driverId, passengerIds);
-        return "Ride " + rideId + " by " + driverId + " is completed.";
-    }
+//    Deprecated API: (using Kafka topic instead)
+//    @PostMapping("/completeRide")
+//    public String completeRide(@RequestParam String rideId, @RequestParam String driverId, @RequestParam String[] passengerIds) throws RideNotFoundException, JsonProcessingException {
+//        rideService.completeRide(rideId, driverId, passengerIds);
+//        return "Ride " + rideId + " by " + driverId + " is completed.";
+//    }
 }
 
 /*
