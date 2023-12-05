@@ -2,6 +2,7 @@ package com.campushare.RideLifecycleManagement.service;
 
 import com.campushare.RideLifecycleManagement.dto.PostRideDTO;
 import com.campushare.RideLifecycleManagement.dto.RejectJoinDTO;
+import com.campushare.RideLifecycleManagement.dto.RejectJoinDTO.RejectMessage;
 import com.campushare.RideLifecycleManagement.dto.UserPaymentDTO;
 import com.campushare.RideLifecycleManagement.model.Ride;
 import com.campushare.RideLifecycleManagement.repository.RideRepository;
@@ -68,6 +69,7 @@ public class RideService {
             if (existingRide.getNoOfSeats() < 1) {
                 throw new NoSeatLeftException("This ride " + rideId + " has no seat left now! ");
             } else {
+                logger.info("Join request for" + passengerId + " to join " + rideId + " is approved");
                 existingRide.addPassenger(passengerId);
                 rideRepository.save(existingRide);
             }
@@ -79,7 +81,9 @@ public class RideService {
     public void rejectJoinRequest(String rideId, String rideTitle, String passengerId) throws RideNotFoundException, JsonProcessingException {
         Optional<Ride> existingRideOpt = rideRepository.findById(rideId);
         if (existingRideOpt.isPresent()) {
-            String rejectMessage = "Sorry, your request to join in the ride " + rideTitle + " was rejected.";
+            logger.info("Join request for" + passengerId + " to join " + rideTitle + " is rejected.");
+            String notificationBody = "Sorry, your request to join in the ride " + rideTitle + " was rejected.";
+            RejectMessage rejectMessage = new RejectMessage(passengerId, rideId, rideTitle, notificationBody);
             RejectJoinDTO rejectJoinDTO = new RejectJoinDTO(passengerId, rejectMessage);
             ObjectMapper objectMapper = new ObjectMapper();
             String jsonRejectJoinDTO = objectMapper.writeValueAsString(rejectJoinDTO);

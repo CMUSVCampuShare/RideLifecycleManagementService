@@ -7,5 +7,13 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class RejectJoinDTO {
     private String passengerId;
-    private String message;
+    private RejectMessage message;
+    @Data
+    @AllArgsConstructor
+    public static class RejectMessage {
+        private String passengerID;
+        private String postId;
+        private String postTitle;
+        private String notificationBody;
+    }
 }
