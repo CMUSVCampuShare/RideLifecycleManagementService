@@ -87,7 +87,7 @@ public class RideService {
             RejectJoinDTO rejectJoinDTO = new RejectJoinDTO(passengerId, rejectMessage);
             ObjectMapper objectMapper = new ObjectMapper();
             String jsonRejectJoinDTO = objectMapper.writeValueAsString(rejectJoinDTO);
-            rejectKafkaTemplate.send("reject_join_topic", jsonRejectJoinDTO);
+            rejectKafkaTemplate.send("notify_driver_topic", jsonRejectJoinDTO);
         } else {
             throw new RideNotFoundException("Cannot find the RideId/PostId that you send: " + rideId);
         }
