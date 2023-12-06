@@ -34,7 +34,7 @@ public class RideKafkaListener {
             if (editRideDTO.getPost().getStatus() == PostRideDTO.Status.COMPLETED) {
                 String rideId = editRideDTO.getPost().getPostId();
                 Ride ride = rideService.getRideEntry(rideId);
-                rideService.completeRide(rideId, ride.getDriverId(), ride.getPassengerIds().toArray(new String[0]));
+                ride.completeRide();
                 logger.info("Ride " + rideId + " by " + ride.getDriverId() + " is completed.");
             } else {
                 rideService.editRideEntry(editRideDTO);

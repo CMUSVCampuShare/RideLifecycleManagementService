@@ -62,19 +62,22 @@ public class RideService {
         }
     }
 
-    public void approveJoinRequest(String rideId, String passengerId) throws RideNotFoundException, NoSeatLeftException {
-        Optional<Ride> existingRideOpt = rideRepository.findById(rideId);
+    public void approveJoinRequest(Ride ride, String passengerId) throws RideNotFoundException, NoSeatLeftException {
+        Optional<Ride> existingRideOpt = rideRepository.findById(ride.getRideId());
         if (existingRideOpt.isPresent()) {
             Ride existingRide = existingRideOpt.get();
             if (existingRide.getNoOfSeats() < 1) {
-                throw new NoSeatLeftException("This ride " + rideId + " has no seat left now! ");
+                throw new NoSeatLeftException("This ride " + ride.getRideId() + " has no seat left now! ");
             } else {
-                logger.info("Join request for" + passengerId + " to join " + rideId + " is approved");
+                logger.info("Join request for" + passengerId + " to join " + ride.getRideId() + " is approved");
                 existingRide.addPassenger(passengerId);
+                existingRide.setStatus(ride.getStatus());
+                existingRide.changeState(ride.getCurrentState());
+                existingRide.setTimestamp(new Date());
                 rideRepository.save(existingRide);
             }
         } else {
-            throw new RideNotFoundException("Cannot find the RideId/PostId that you send: " + rideId);
+            throw new RideNotFoundException("Cannot find the RideId/PostId that you send: " + ride.getRideId());
         }
     }
 
@@ -93,22 +96,34 @@ public class RideService {
         }
     }
 
-    public void completeRide(String rideId, String driverId, String[] passengerIds) throws RideNotFoundException, JsonProcessingException {
-        // Send a user_payment_topic to Kafka
-        UserPaymentDTO userPaymentDTO = new UserPaymentDTO(rideId, driverId, passengerIds);
+    public void completeRide(Ride ride) throws RideNotFoundException, JsonProcessingException {
+        UserPaymentDTO userPaymentDTO = new UserPaymentDTO(ride.getRideId(), ride.getDriverId(), ride.getPassengerIds().toArray(new String[0]));
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonUserPaymentDTO = objectMapper.writeValueAsString(userPaymentDTO);
         userPaymentKafkaTemplate.send("user_payment_topic", jsonUserPaymentDTO);
 
-        // Save the record into database
-        Optional<Ride> existingRideOpt = rideRepository.findById(rideId);
+        Optional<Ride> existingRideOpt = rideRepository.findById(ride.getRideId());
         if (existingRideOpt.isPresent()) {
             Ride existingRide = existingRideOpt.get();
-            existingRide.setStatus(PostRideDTO.Status.COMPLETED); // TODO: Decouple the Status from the PostRideDTO
+            existingRide.setStatus(ride.getStatus());
+            existingRide.changeState(ride.getCurrentState());
             existingRide.setTimestamp(new Date());
             rideRepository.save(existingRide);
         } else {
-            throw new RideNotFoundException("Cannot find the RideId/PostId that you send: " + rideId);
+            throw new RideNotFoundException("Cannot find the RideId/PostId that you send: " + ride.getRideId());
+        }
+    }
+
+    public void updateRideState(Ride ride) {
+        Optional<Ride> existingRideOpt = rideRepository.findById(ride.getRideId());
+        if (existingRideOpt.isPresent()) {
+            Ride existingRide = existingRideOpt.get();
+            existingRide.setStatus(ride.getStatus());
+            existingRide.changeState(ride.getCurrentState());
+            existingRide.setTimestamp(new Date());
+            rideRepository.save(existingRide);
+        } else {
+            throw new RideNotFoundException("Cannot find the RideId/PostId that you send: " + ride.getRideId());
         }
     }
 
